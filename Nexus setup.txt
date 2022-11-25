@@ -1,0 +1,64 @@
+Installing Sonatype Nexus Repository OSS on CentOS 7
+System requirements
+Minimum CPUs: 4, Recommended CPUs: 8+
+Minimum physical/RAM on the host 8GB
+
+hostnamectl set-hostname nexus
+yum update -y
+------------------------------------
+Install Java 11 
+------------------------------------
+sudo yum install java-1.8.0-openjdk.x86_64 -y
+java --version
+---------------------------------------
+ Download Nexus Repository Manager 3
+-----------------------------------
+https://help.sonatype.com/repomanager3/product-information/download/download-archives---repository-manager-3
+
+cd /opt
+wget https://download.sonatype.com/nexus/3/nexus-3.43.0-01-unix.tar.gz
+tar -xvzf nexus-3.43.0-01-unix.tar.gz
+ll
+mv nexus-3.43.0-01-unix nexus
+---------------------------------------
+Set User/Permissions and Configurations
+---------------------------------------
+useradd nexus
+passwd nexus
+visudo
+chown -R nexus:nexus /opt/nexus
+chown -R nexus:nexus /opt/sonatype-work
+---------------------------------------
+
+vi /opt/nexus/bin/nexus.rc
+run_as_user="nexus"
+------------------------------
+vi /etc/security/limits.conf
+nexus - nofile 65536
+-----------------------------
+Set Nexus as a System Service
+
+vi /etc/systemd/system/nexus.service
+
+[Unit]
+Description=Nexus Service
+After=syslog.target network.target
+
+[Service]
+Type=forking
+LimitNOFILE=65536
+ExecStart=/opt/nexus/bin/nexus start
+ExecStop=/opt/nexus/bin/nexus stop
+User=nexus
+Group=nexus
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+-------------------------------------
+
+systemctl daemon-reload
+systemctl enable nexus.service
+systemctl start nexus.service
+
+

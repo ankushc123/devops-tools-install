@@ -1,0 +1,112 @@
+Prerequisite
+---------------
+EC2 Instance==>Security Group with Port 8080 open for internet
+Java installation:
+For Ubuntu
+-sudo apt install default-jre
+-sudo apt install default-jdk
+-java -version
+
+For redhat
+sudo yum install java
+systemctl daemon-reload
+java -version
+
+AMZN Linux/Centos
+sudo yum install java-1.8.0-openjdk.x86_64 -y
+java --version
+sudo amazon-linux-extras install epel -y
+sudo amazon-linux-extras install java-openjdk11
+-----------------------------------------------------------------
+
+readlink -f $(which java)-->Will give java installation path
+vi ~/.bash_profile
+JAVA_HOME="java installation path"
+PATH=$PATH:$HOME/bin:$JAVA_HOME
+:wq
+source ~/.bash_profile-->Reboot
+
+===========================================================================
+Install Jenkins started
+
+https://www.jenkins.io/doc/book/installing/linux/  ==>Link for all flavors
+
+1. AMZN Linux
+sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+sudo yum install jenkins –y
+service jenkins start   || systemctl start jenkins
+chkconfig jenkins on  || systemctl enable jenkins
+
+2. Redhat==>  https://pkg.jenkins.io/redhat-stable/
+  sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+  sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+==>If you've previously imported the key from Jenkins, the rpm --import will fail because you already have a key. Please ignore that and move on.
+  Sudo yum install fontconfig java-11-openjdk
+  sudo yum install Jenkins
+
+3. Ubuntu ==> https://pkg.jenkins.io/debian-stable/ 
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io.key | sudo tee \
+/usr/share/keyrings/jenkins-keyring.asc > /dev/null
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] \
+https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+/etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install fontconfig openjdk-11-jre
+sudo apt-get install jenkins -y
+
+---------------------------------------------------------------
+
+http://<PUBLIC-IP>:8080
+•	default Username is admin
+•	password-->/var/lib/jenkins/secrets/initialAdminPassword
+•	Change admin password
+•	Admin > Configure > Password
+•	Configure java path
+•	readlink -f $(which java)
+•	Manage Jenkins > Global Tool Configuration > JDK
+•	Create another admin user id
+
+==================================================================
+
+Install and Configure Git
+yum install git -y
+Install git plugin without restart
+Manage Jenkins > Jenkins Plugins > available > github
+Configure git path 
+readlink -f $(which git)
+Manage Jenkins > Global Tool Configuration > git
+
+===================================================================
+
+Download and configure Maven
+https://maven.apache.org/download.cgi
+ mkdir /opt/maven
+ cd /opt/maven
+yum install wget -y
+ wget http://mirrors.estointernet.in/apache/maven/maven-3/3.6.1/binaries/apache-maven-3.6.1-bin.tar.gz
+ tar -xvzf apache-maven-3.6.1-bin.tar.gz 
+
+ vi ~/.bash_profile
+M2_HOME=/opt/maven/apache-maven-3.6.1
+M2=$M2_HOME/bin
+PATH=<Existing_PATH>:$M2_HOME:$M2
+:wq
+
+mvn --version
+Install maven plugin without restart
+Manage Jenkins > Jenkins Plugins > available > Maven Invoker
+Manage Jenkins > Jenkins Plugins > available > Maven Integration
+Configure maven path
+Manage Jenkins > Global Tool Configuration > Maven
+/opt/maven/apache-maven-3.6.1
+
+==================================================================
+
+
+
+
+
+
+
+
